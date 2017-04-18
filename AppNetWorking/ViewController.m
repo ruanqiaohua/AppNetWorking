@@ -149,7 +149,7 @@ static NSString *const GetAreas = @"/api/AgentTemp/GetAreas";
     [parameters setValue:[NSNumber numberWithInteger:cityId] forKey:@"ProvinceId"];
     [[AppNetWorking shareInstance] GET:GetCitys parameters:parameters successCb:^(id data) {
         if (successCb) {
-            successCb(data);
+            successCb([self sortedArray:data]);
         }
     } failureCb:^(NSError *error) {
         
