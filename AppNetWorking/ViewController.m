@@ -27,12 +27,29 @@ static NSString *const GetAreas = @"/api/AgentTemp/GetAreas";
     [self getProvinces:^(id data) {
         
         NSArray *array = data;
-        BOOL result = [array writeToFile:areaPath atomically:YES];
+        NSArray *newArray = [self sortedArray:array];
+        BOOL result = [newArray writeToFile:areaPath atomically:YES];
         if (result) {
             NSLog(@"保存成功");
         }
     }];
     // Do any additional setup after loading the view, typically from a nib.
+}
+
+- (NSArray *)sortedArray:(NSArray *)array {
+    
+    NSArray *newArray = [array sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NSInteger Id1 = [obj1[@"Id"] integerValue];
+        NSInteger Id2 = [obj2[@"Id"] integerValue];
+        if (Id1 > Id2) {
+            return NSOrderedDescending;
+        } else {
+            return NSOrderedAscending;
+        }
+        return NSOrderedSame;
+    }];
+    return newArray;
+
 }
 
 - (void)getProvinces:(SuccessCallBack)successCb {
@@ -68,7 +85,7 @@ static NSString *const GetAreas = @"/api/AgentTemp/GetAreas";
         // 调度组通知
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^(){
             if (successCb) {
-                successCb(mArr);
+                successCb([self sortedArray:mArr]);
             }
         });
 
@@ -113,7 +130,7 @@ static NSString *const GetAreas = @"/api/AgentTemp/GetAreas";
         // 调度组通知
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue(), ^(){
             if (successCb) {
-                successCb(mArr);
+                successCb([self sortedArray:mArr]);
             }
         });
 
